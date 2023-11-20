@@ -1,0 +1,10 @@
+.custom-pre {
+  /* Add styling for the list items (pre elements) */
+  font-size: 8px;
+  color: #333;
+}
+
+.chart-svg {
+  /* Add styling for the D3.js chart SVG element */
+  max-width: 100%;
+}
