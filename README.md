@@ -51,7 +51,7 @@ Add the departure board to your configuration file, for instance:
 Configuration options are as follows:
 
 | Option | Description | Default value |
-|------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
+|-------------------------------|-----------------------------------------------------------------------------------------------------------------------------|---------------|
 | chartType | String. Can choose between bar and Line | "line" |
 | historicalData | Integer. Amount of previous hours to show | 2 |
 | height | Integer. Height of the module. | 5 |
