@@ -21,7 +21,7 @@ module.exports = NodeHelper.create({
       .get(url)
       .then((response) => {
         var currentHour = new Date().getHours();
-        console.log("Data fetched successfully:", response.data);
+        //console.log("Data fetched successfully:", response.data);
         if (currentHour < 14) {
           this.currentDayData = response.data;
           this.sendSocketNotification("JSON_DATA_RESULT", this.currentDayData);
@@ -35,7 +35,7 @@ module.exports = NodeHelper.create({
         if(this.isNextDayData(response.data)){
           this.nextDayData = response.data;
         }
-      console.log("Data fetched successfully:", response.data);
+      //console.log("Data fetched successfully:", response.data);
       this.sendSocketNotification("JSON_DATA_RESULT", this.currentDayData.concat(this.nextDayData));
       })
       .catch((error) => {
