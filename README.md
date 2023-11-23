@@ -7,17 +7,17 @@ Add the departure board to your configuration file, for instance:
 ```js
 //Line Chart Example:
 {
-    module: "NOKElectricityForecast",
-    position: "bottom_bar", // Adjust the position as needed
-    header: "Electricity Prices",
+    module: "MMM-NOKElectricityForecast",
+    position: "bottom_bar",
+    header: "Strømpriser",
     config: {
-        updateInterval: 30000, // Update every 10 minutes (adjust as needed)
+        updateInterval: 40000,
         chartType: "line",
-        historicalData: 3, //Amount of earlier hours to show (0 is current hour)
-        height: 150, //Height of the module
-        width: 15, //width of the module, scales automatically to amount of bars
-        primaryColor: "white", //D3.js color
-        secondaryColor: "red", //D3.js color
+        historicalData: 3,
+        height: 150,
+        width: 15,
+        primaryColor: "white",
+        secondaryColor: "red",
         dynamicYAxis: true,
         lineThickness: 3,
         currentHourLineThickness: 3,
@@ -25,26 +25,30 @@ Add the departure board to your configuration file, for instance:
         yAxisExtention: 0.0
     },
 },
+```
+<img src="./images/linechart.png">
 
+```js
 //Bar Chart Example:
 {
     module: "NOKElectricityForecast",
-    position: "bottom_bar", // Adjust the position as needed
+    position: "bottom_bar", 
     header: "Electricity Prices",
     config: {
-        updateInterval: 20000, // Update every 10 minutes (adjust as needed)
-        historicalData: 3, //Amount of earlier hours to show (0 is current hour)
-        height: 200, //Height of the module
-        width: 15, //width of the module, scales automatically to amount of bars
+        updateInterval: 20000, 
+        historicalData: 3, 
+        height: 200, 
+        width: 15, 
         chartType: "bar",
         primaryColor: "white",
         secondaryColor: "yellow",
         dynamicYAxis: false,
-        barOffset: 10, //Need to adjust this based on barwidth to center the bar
-        barwidth: 10, // Width of the bars
+        barOffset: 10,
+        barwidth: 10, 
     },
 },
 ```
+<img src="./images/barchart.png">
 
 ## Configuration
 
@@ -60,10 +64,10 @@ Configuration options are as follows:
 | primaryColor | String. D3.js color. Color of the line or the bars | "white" |
 | secondaryColor | String. D3.js color. Color of the current hour marker | "yellow" |
 | dynamicYAxis | Boolean. If you want the values on the Y-axis to be calculated dynamically based on the contents of the chart, if set to false minimum value will be 0, and maximum value will be calculated based on content | "true" |
-| yAxisExtention | Decimal. Values between 0.0 and 0.9. Will increase y-axis values by chosen amount | 0.0
-| barOffset | Integer.  Seconds between board refresh | 10 |
-| barwidth | Integer. Show the transport mode as an icon. | 10 |
-| lineThickness | Integer | 3 |
-| currentHourLineThickness | Integer | 3 |
-| currentHourLineLenght | Integer | 0 |
+| yAxisExtention | Decimal. Values between 0.0 and 0.9. Will extend y-axis values by chosen amount | 0.0
+| barOffset | Integer. Used to center the bars in between the values. Depends on what you choose as barwidth | 10 |
+| barwidth | Integer. The width of each bar in the barchart | 10 |
+| lineThickness | Integer | Thickness of the line in the linechart |
+| currentHourLineThickness | Thickness of the line marking the current hour | 3 |
+| currentHourLineLenght | Length of the line marking the current hour | 0 |
 
