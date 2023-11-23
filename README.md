@@ -50,8 +50,9 @@ Add the departure board to your configuration file, for instance:
 
 Configuration options are as follows:
 
+
 | Option | Description | Default value |
-|-------------------------------|-----------------------------------------------------------------------------------------------------------------------------|---------------|
+|-------------|--------------------------------------------------|---------------|
 | chartType | String. Can choose between bar and Line | "line" |
 | historicalData | Integer. Amount of previous hours to show | 2 |
 | height | Integer. Height of the module. | 5 |
@@ -62,7 +63,7 @@ Configuration options are as follows:
 | yAxisExtention | Decimal. Values between 0.0 and 0.9. Will increase y-axis values by chosen amount | 0.0
 | barOffset | Integer.  Seconds between board refresh | 10 |
 | barwidth | Integer. Show the transport mode as an icon. | 10 |
-| lineThickness | Integer | 3
-| currentHourLineThickness | Integer | 3
-| currentHourLineLenght | Integer | 0
+| lineThickness | Integer | 3 |
+| currentHourLineThickness | Integer | 3 |
+| currentHourLineLenght | Integer | 0 |
 
