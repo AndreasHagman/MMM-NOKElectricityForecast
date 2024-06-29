@@ -59,7 +59,7 @@ Configuration options are as follows:
 |-------------|--------------------------------------------------|---------------|
 | chartType | String. Can choose between bar and Line | "line" |
 | historicalData | Integer. Amount of previous hours to show | 2 |
-| height | Integer. Height of the module. | 5 |
+| height | Integer. Height of the module. | 150 |
 | width | Integer.  Witdh of the module. Total width is calculated based on current amount of hours showing, so this is not the final width | 15 |
 | primaryColor | String. D3.js color. Color of the line or the bars | "white" |
 | secondaryColor | String. D3.js color. Color of the current hour marker | "yellow" |
@@ -67,7 +67,7 @@ Configuration options are as follows:
 | yAxisExtention | Decimal. Values between 0.0 and 0.9. Will extend y-axis values by chosen amount | 0.0
 | barOffset | Integer. Used to center the bars in between the values. Depends on what you choose as barwidth | 10 |
 | barwidth | Integer. The width of each bar in the barchart | 10 |
-| lineThickness | Integer | Thickness of the line in the linechart |
+| lineThickness | Integer. Thickness of the line in the linechart | 3 |
 | currentHourLineThickness | Thickness of the line marking the current hour | 3 |
 | currentHourLineLenght | Length of the line marking the current hour | 0 |
 

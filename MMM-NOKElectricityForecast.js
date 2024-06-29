@@ -25,10 +25,10 @@ Module.register("MMM-NOKElectricityForecast", {
 	start: function () {
 	  Log.info("Starting module: " + this.name);
 	  this.getData();
-	  //this.scheduleUpdate();
+	  this.scheduleUpdate();
 	},
 	getData: function (url = this.config.url) {
-		//Log.info("Getting data from: " + url);
+		Log.info("Getting data from: " + url);
 		this.sendSocketNotification("GET_JSON_DATA", { url: url });
 	  },
 
@@ -286,4 +286,3 @@ Module.register("MMM-NOKElectricityForecast", {
   
 	return `${year}/${month}-${day}`;
   }
-
