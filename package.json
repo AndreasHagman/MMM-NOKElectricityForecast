@@ -1,0 +1,11 @@
+{
+  "name": "mmm-nokelectricityforecast",
+  "version": "1.0.0",
+  "description": "MagicMirror² module showing hourly Norwegian electricity prices (hvakosterstrommen.no) as a bar or line chart.",
+  "main": "MMM-NOKElectricityForecast.js",
+  "license": "MIT",
+  "author": "Andreas Hagman",
+  "dependencies": {
+    "axios": "^1.8.4"
+  }
+}
