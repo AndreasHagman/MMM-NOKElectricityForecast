@@ -43,6 +43,19 @@ Module.register("MMM-NOKElectricityForecast", {
 		return VAT_EXEMPT_PRICE_AREAS.includes(this.config.priceArea) ? 1 : VAT_MULTIPLIER;
 	},
 
+	// Returns the incl.-VAT price for the current hour, or null if it isn't in jsonData.
+	getCurrentPrice: function () {
+		if (!this.jsonData) {
+			return null;
+		}
+		var now = new Date();
+		var entry = this.jsonData.find((e) => {
+			var d = new Date(e.time_start);
+			return d.getHours() === now.getHours() && d.getDate() === now.getDate() && d.getMonth() === now.getMonth();
+		});
+		return entry ? entry.NOK_per_kWh * this.getVatMultiplier() : null;
+	},
+
 	// Define required scripts.
 	getStyles: function () {
 		return ["NOKElectricityForecast.css"];
@@ -79,8 +92,17 @@ Module.register("MMM-NOKElectricityForecast", {
   
 	getDom: function () {
 		var wrapper = document.createElement("div");
-	  
+
 		if (this.jsonData && this.jsonData.length > 0) {
+		  // Show the current hour's price as text, since a mirror can't be hovered for a tooltip
+		  var currentPrice = this.getCurrentPrice();
+		  if (currentPrice !== null) {
+			var priceLabel = document.createElement("div");
+			priceLabel.className = "current-price";
+			priceLabel.innerHTML = "Current price: <span class=\"bright\">" + currentPrice.toFixed(2) + "</span> kr/kWh";
+			wrapper.appendChild(priceLabel);
+		  }
+
 		  // Create an SVG element for the chart
 		  var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		  svg.setAttribute("class", "chart-svg");

@@ -8,3 +8,7 @@
   /* Add styling for the D3.js chart SVG element */
   max-width: 100%;
 }
+
+.current-price {
+  margin-bottom: 5px;
+}
