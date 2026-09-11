@@ -13,6 +13,7 @@ Add the departure board to your configuration file, for instance:
     config: {
         updateInterval: 300000, // 5 min - prices only change hourly, and node_helper caches the day's data anyway
         priceArea: "NO1",
+        showCurrentPrice: true,
         chartType: "line",
         historicalData: 3,
         height: 150,
@@ -39,6 +40,7 @@ Add the departure board to your configuration file, for instance:
     config: {
         updateInterval: 300000, // 5 min - prices only change hourly, and node_helper caches the day's data anyway
         priceArea: "NO1",
+        showCurrentPrice: true,
         historicalData: 3,
         height: 200,
         width: 15,
@@ -62,6 +64,7 @@ Configuration options are as follows:
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
 | updateInterval           | Integer (ms). How often the chart re-renders (e.g. to move the current-hour marker). The underlying price data is cached and only actually fetched once it's needed, so this can safely be fairly frequent    | 300000        |
 | priceArea                | String. Norwegian electricity price area: "NO1", "NO2", "NO3", "NO4" or "NO5"                                                                                                                                 | "NO1"         |
+| showCurrentPrice         | Boolean. Show the current hour's price as text (e.g. "Current price: 1.89 kr/kWh") above the chart                                                                                                            | true          |
 | chartType                | String. Can choose between bar and Line                                                                                                                                                                       | "line"        |
 | historicalData           | Integer. Amount of previous hours to show                                                                                                                                                                     | 2             |
 | height                   | Integer. Height of the module.                                                                                                                                                                                | 150           |

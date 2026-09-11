@@ -14,6 +14,7 @@ Module.register("MMM-NOKElectricityForecast", {
 		updateInterval: 300000, // 5 min. Only re-renders the chart (moves the "current hour" marker) most of the time - node_helper caches the actual API data for the day.
 		priceArea: "NO1", // Norwegian electricity price area: NO1-NO5. See https://www.hvakosterstrommen.no for a map.
 		historicalData: 2,
+		showCurrentPrice: true, // Show the current hour's price as text above the chart
 		chartType: "line",
 		height: 150,
 		width: 15,
@@ -95,7 +96,7 @@ Module.register("MMM-NOKElectricityForecast", {
 
 		if (this.jsonData && this.jsonData.length > 0) {
 			// Show the current hour's price as text, since a mirror can't be hovered for a tooltip
-			var currentPrice = this.getCurrentPrice();
+			var currentPrice = this.config.showCurrentPrice ? this.getCurrentPrice() : null;
 			if (currentPrice !== null) {
 				var priceLabel = document.createElement("div");
 				priceLabel.className = "current-price";
