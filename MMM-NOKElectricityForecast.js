@@ -11,32 +11,32 @@ const VAT_MULTIPLIER = 1.25; // 25% MVA
 
 Module.register("MMM-NOKElectricityForecast", {
 	defaults: {
-	  updateInterval: 300000, // 5 min. Only re-renders the chart (moves the "current hour" marker) most of the time - node_helper caches the actual API data for the day.
-	  priceArea: "NO1", // Norwegian electricity price area: NO1-NO5. See https://www.hvakosterstrommen.no for a map.
-	  historicalData: 2,
-	  chartType: "line",
-	  height: 150,
-	  width : 15,
-	  primaryColor: "white",
-	  secondaryColor: "yellow",
-	  dynamicYAxis: true,
-	  barOffset: 10,
-	  barwidth: 10,
-	  lineThickness: 3,
-	  currentHourLineThickness: 3,
-	  currentHourLineLenght: 0,
-	  yAxisExtention: 0.0
+		updateInterval: 300000, // 5 min. Only re-renders the chart (moves the "current hour" marker) most of the time - node_helper caches the actual API data for the day.
+		priceArea: "NO1", // Norwegian electricity price area: NO1-NO5. See https://www.hvakosterstrommen.no for a map.
+		historicalData: 2,
+		chartType: "line",
+		height: 150,
+		width: 15,
+		primaryColor: "white",
+		secondaryColor: "yellow",
+		dynamicYAxis: true,
+		barOffset: 10,
+		barwidth: 10,
+		lineThickness: 3,
+		currentHourLineThickness: 3,
+		currentHourLineLenght: 0,
+		yAxisExtention: 0.0
 	},
-  
+
 	start: function () {
-	  Log.info("Starting module: " + this.name);
-	  this.getData();
-	  this.scheduleUpdate();
+		Log.info("Starting module: " + this.name);
+		this.getData();
+		this.scheduleUpdate();
 	},
 	getData: function () {
 		Log.info("Getting data for price area: " + this.config.priceArea);
 		this.sendSocketNotification("GET_JSON_DATA", { priceArea: this.config.priceArea });
-	  },
+	},
 
 	// Prices from the API are excl. VAT. Households in NO4 are VAT-exempt, everyone else pays 25% MVA.
 	getVatMultiplier: function () {
@@ -65,74 +65,74 @@ Module.register("MMM-NOKElectricityForecast", {
 	getScripts: function () {
 		return ["d3.min.js"];
 	},
-  
+
 	scheduleUpdate: function () {
 		var self = this;
 		setInterval(function () {
-		  // node_helper decides internally whether tomorrow's data is needed yet;
-		  // we just ask for the configured price area every interval.
-		  self.getData();
+			// node_helper decides internally whether tomorrow's data is needed yet;
+			// we just ask for the configured price area every interval.
+			self.getData();
 		}, this.config.updateInterval);
-	  },
-  
+	},
+
 	socketNotificationReceived: function (notification, payload) {
-	//console.log("Received notification:", notification);
-	//console.log("Data is: " + payload.length);
-	  if (notification === "JSON_DATA_RESULT") {
-		//Log.info("Received JSON data:", payload.length);
-		this.processData(payload);
-	  }
+		//console.log("Received notification:", notification);
+		//console.log("Data is: " + payload.length);
+		if (notification === "JSON_DATA_RESULT") {
+			//Log.info("Received JSON data:", payload.length);
+			this.processData(payload);
+		}
 	},
 
 	processData: function (data) {
-	  //Log.info("Processing data:", data);
-	  this.jsonData = data;
-	  this.updateDom();
+		//Log.info("Processing data:", data);
+		this.jsonData = data;
+		this.updateDom();
 	},
-  
+
 	getDom: function () {
 		var wrapper = document.createElement("div");
 
 		if (this.jsonData && this.jsonData.length > 0) {
-		  // Show the current hour's price as text, since a mirror can't be hovered for a tooltip
-		  var currentPrice = this.getCurrentPrice();
-		  if (currentPrice !== null) {
-			var priceLabel = document.createElement("div");
-			priceLabel.className = "current-price";
-			priceLabel.innerHTML = "Current price: <span class=\"bright\">" + currentPrice.toFixed(2) + "</span> kr/kWh";
-			wrapper.appendChild(priceLabel);
-		  }
+			// Show the current hour's price as text, since a mirror can't be hovered for a tooltip
+			var currentPrice = this.getCurrentPrice();
+			if (currentPrice !== null) {
+				var priceLabel = document.createElement("div");
+				priceLabel.className = "current-price";
+				priceLabel.innerHTML = 'Current price: <span class="bright">' + currentPrice.toFixed(2) + "</span> kr/kWh";
+				wrapper.appendChild(priceLabel);
+			}
 
-		  // Create an SVG element for the chart
-		  var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-		  svg.setAttribute("class", "chart-svg");
-		  wrapper.appendChild(svg);
-	  
-		  // Create a chart using D3.js
-		  if(this.config.chartType == "bar"){
-			this.createBarChartD3(svg);
-		  }
-		  if(this.config.chartType == "line"){
-			this.createLineChartD3(svg);
-		  }
+			// Create an SVG element for the chart
+			var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+			svg.setAttribute("class", "chart-svg");
+			wrapper.appendChild(svg);
+
+			// Create a chart using D3.js
+			if (this.config.chartType == "bar") {
+				this.createBarChartD3(svg);
+			}
+			if (this.config.chartType == "line") {
+				this.createLineChartD3(svg);
+			}
 		} else {
-		  //console.log("JSONDATA " + this.jsonData);
-		  wrapper.innerHTML = "Loading ...";
+			//console.log("JSONDATA " + this.jsonData);
+			wrapper.innerHTML = "Loading ...";
 		}
-	  
+
 		return wrapper;
-	  },
-	  createBarChartD3: function (svg) {
+	},
+	createBarChartD3: function (svg) {
 		// Sample data
 		var vatMultiplier = this.getVatMultiplier();
 		var data = this.jsonData.map((entry) => ({
-		  datetime: new Date(entry.time_start), // Store both date and time in datetime field
-		  price: entry.NOK_per_kWh * vatMultiplier
+			datetime: new Date(entry.time_start), // Store both date and time in datetime field
+			price: entry.NOK_per_kWh * vatMultiplier
 		}));
 
 		// Filter data for entries. 2 hours  historical is default
 		var filterHours = new Date();
-		filterHours.setHours(filterHours.getHours() - this.config.historicalData-1);
+		filterHours.setHours(filterHours.getHours() - this.config.historicalData - 1);
 		data = data.filter((entry) => entry.datetime > filterHours);
 
 		if (data.length === 0) {
@@ -147,73 +147,82 @@ Module.register("MMM-NOKElectricityForecast", {
 		tomorrow.setDate(tomorrow.getDate() + 1); // Get the date for the next day
 		tomorrow.setHours(0, 0, 0, 0); // Set the time to 00:00 for the next day
 
-	  
 		console.log("Creating barchart with data: " + data.length);
 		// Set up chart dimensions
 		// Calculate the width based on the number of data entries
 		var margin = { top: 20, right: 20, bottom: 30, left: 40 };
-		var width = data.length * this.config.width
+		var width = data.length * this.config.width;
 		var height = this.config.height - margin.top - margin.bottom;
-	  
+
 		// Create SVG element
-		var d3Svg = d3.select(svg)
-		  .attr("width", width + margin.left + margin.right)
-		  .attr("height", height + margin.top + margin.bottom)
-		  .append("g")
-		  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-	  
+		var d3Svg = d3
+			.select(svg)
+			.attr("width", width + margin.left + margin.right)
+			.attr("height", height + margin.top + margin.bottom)
+			.append("g")
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
 		// Set up x and y scales
-		var x = d3.scaleBand()
-		  .domain(data.map(d => d.datetime)) // Use datetime as x-axis domain
-		  .range([0, width]);
+		var x = d3
+			.scaleBand()
+			.domain(data.map((d) => d.datetime)) // Use datetime as x-axis domain
+			.range([0, width]);
 
-		  // Extend the x-axis domain to include the new datetime value
-			var xDomain = x.domain();
-			xDomain.push(tomorrow);
+		// Extend the x-axis domain to include the new datetime value
+		var xDomain = x.domain();
+		xDomain.push(tomorrow);
 
-			// Update the x-axis scale with the extended domain
-			x.domain(xDomain);
-	  
-		var y = d3.scaleLinear()
-		  .domain([this.config.dynamicYAxis ? d3.min(data, (d) => d.price) - this.config.yAxisExtention : 0, d3.max(data, (d) => d.price) + this.config.yAxisExtention]) //Sets the height (top value) of the y-axis
-		  .nice() // This adjusts the y-axis to "nice" values, ensuring clarity in the chart
-		  .range([height, 0]);
-	  
+		// Update the x-axis scale with the extended domain
+		x.domain(xDomain);
+
+		var y = d3
+			.scaleLinear()
+			.domain([
+				this.config.dynamicYAxis ? d3.min(data, (d) => d.price) - this.config.yAxisExtention : 0,
+				d3.max(data, (d) => d.price) + this.config.yAxisExtention
+			]) //Sets the height (top value) of the y-axis
+			.nice() // This adjusts the y-axis to "nice" values, ensuring clarity in the chart
+			.range([height, 0]);
+
 		// Draw bars
-		d3Svg.selectAll(".bar")
-		.data(data)
-		.enter().append("rect")
-		.attr("class", "bar")
-		.attr("x", (d) => x(d.datetime) + this.config.barOffset)
-		.attr("y", (d) => y(d.price)) // Set y-coordinate of bars
-		.attr("width", this.config.barwidth)
-		.attr("height", (d) => height - y(d.price))
-		.attr("fill", (d) => {
-		const currentDate = new Date();
-		const currentHour = currentDate.getHours();
-		return (d.datetime.getDate() === currentDate.getDate() && d.datetime.getHours() === currentHour) ? this.config.secondaryColor : this.config.primaryColor;
-		});
-	  
+		d3Svg
+			.selectAll(".bar")
+			.data(data)
+			.enter()
+			.append("rect")
+			.attr("class", "bar")
+			.attr("x", (d) => x(d.datetime) + this.config.barOffset)
+			.attr("y", (d) => y(d.price)) // Set y-coordinate of bars
+			.attr("width", this.config.barwidth)
+			.attr("height", (d) => height - y(d.price))
+			.attr("fill", (d) => {
+				const currentDate = new Date();
+				const currentHour = currentDate.getHours();
+				return d.datetime.getDate() === currentDate.getDate() && d.datetime.getHours() === currentHour
+					? this.config.secondaryColor
+					: this.config.primaryColor;
+			});
+
 		// Add x-axis
-		d3Svg.append("g")
-		.attr("transform", "translate(0," + height + ")")
-		.call(d3.axisBottom(x).tickFormat(d3.timeFormat("%H")))// Format ticks to show only hours
-	
+		d3Svg
+			.append("g")
+			.attr("transform", "translate(0," + height + ")")
+			.call(d3.axisBottom(x).tickFormat(d3.timeFormat("%H"))); // Format ticks to show only hours
+
 		// Add y-axis
-		d3Svg.append("g")
-		  .call(d3.axisLeft(y));
-	  },
-	  createLineChartD3: function(svg) {
+		d3Svg.append("g").call(d3.axisLeft(y));
+	},
+	createLineChartD3: function (svg) {
 		// Sample data (assuming data has 'time_start' and 'NOK_per_kWh' fields)
 		var vatMultiplier = this.getVatMultiplier();
 		var data = this.jsonData.map((entry) => ({
-		  datetime: new Date(entry.time_start), // Store time_start as datetime field
-		  price: entry.NOK_per_kWh * vatMultiplier // Use NOK_per_kWh incl. VAT (if applicable) as the y-value
+			datetime: new Date(entry.time_start), // Store time_start as datetime field
+			price: entry.NOK_per_kWh * vatMultiplier // Use NOK_per_kWh incl. VAT (if applicable) as the y-value
 		}));
 
 		// Filter data for entries. 2 hours  historical is default
 		var filterHours = new Date();
-		filterHours.setHours(filterHours.getHours() - this.config.historicalData-1);
+		filterHours.setHours(filterHours.getHours() - this.config.historicalData - 1);
 		data = data.filter((entry) => entry.datetime > filterHours);
 
 		if (data.length === 0) {
@@ -229,61 +238,71 @@ Module.register("MMM-NOKElectricityForecast", {
 			tomorrow.setDate(tomorrow.getDate() + 1); // Get the date for the next day
 			tomorrow.setHours(0, 0, 0, 0); // Set the time to 00:00 for the next day
 
-		// Create a new entry object
-		var newEntry = {
-			datetime: tomorrow,
-			price: lastEntry.price, // Set the price to be the same as the last entry
-		};
+			// Create a new entry object
+			var newEntry = {
+				datetime: tomorrow,
+				price: lastEntry.price // Set the price to be the same as the last entry
+			};
 
-		// Add the new entry to the data array
-		data.push(newEntry);
+			// Add the new entry to the data array
+			data.push(newEntry);
 		}
 
-	  
 		var margin = { top: 20, right: 20, bottom: 30, left: 40 };
 		var width = data.length * this.config.width;
 		var height = this.config.height;
-	  
+
 		// Create x and y scales
-		var x = d3.scaleTime()
-		  .domain(d3.extent(data, (d) => d.datetime)) // Use time range for x-axis
-		  .range([0, width]);
-	  
-		var y = d3.scaleLinear()
-		  .domain([this.config.dynamicYAxis ? d3.min(data, (d) => d.price) - this.config.yAxisExtention : 0, d3.max(data, (d) => d.price) + this.config.yAxisExtention]) // Use NOK_per_kWh range for y-axis
-		  .nice()
-		  .range([height, 0]);
-	  
+		var x = d3
+			.scaleTime()
+			.domain(d3.extent(data, (d) => d.datetime)) // Use time range for x-axis
+			.range([0, width]);
+
+		var y = d3
+			.scaleLinear()
+			.domain([
+				this.config.dynamicYAxis ? d3.min(data, (d) => d.price) - this.config.yAxisExtention : 0,
+				d3.max(data, (d) => d.price) + this.config.yAxisExtention
+			]) // Use NOK_per_kWh range for y-axis
+			.nice()
+			.range([height, 0]);
+
 		// Create a line function using D3's line generator
-		var line = d3.line()
-		  .x((d) => x(d.datetime)) // x-coordinate of the line
-		  .y((d) => y(d.price)) // y-coordinate of the line
-		  .curve(d3.curveStepAfter);
-	  
+		var line = d3
+			.line()
+			.x((d) => x(d.datetime)) // x-coordinate of the line
+			.y((d) => y(d.price)) // y-coordinate of the line
+			.curve(d3.curveStepAfter);
+
 		// Create SVG element
-		var d3Svg = d3.select(svg)
-		  .attr("width", width + margin.left + margin.right)
-		  .attr("height", height + margin.top + margin.bottom)
-		  .append("g")
-		  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+		var d3Svg = d3
+			.select(svg)
+			.attr("width", width + margin.left + margin.right)
+			.attr("height", height + margin.top + margin.bottom)
+			.append("g")
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 		// Append a path element to the SVG for the line
-		d3Svg.append("path")
-		  .datum(data)
-		  .attr("fill", "none")
-		  .attr("stroke", this.config.primaryColor)
-		  .attr("stroke-width", this.config.lineThickness)
-		  .attr("d", line);
+		d3Svg
+			.append("path")
+			.datum(data)
+			.attr("fill", "none")
+			.attr("stroke", this.config.primaryColor)
+			.attr("stroke-width", this.config.lineThickness)
+			.attr("d", line);
 
 		// Find data point for the current hour
 		var currentDate = new Date();
-		var currentHourData = data.find(d => d.datetime.getHours() === currentDate.getHours() && d.datetime.getDate() === currentDate.getDate());
+		var currentHourData = data.find(
+			(d) => d.datetime.getHours() === currentDate.getHours() && d.datetime.getDate() === currentDate.getDate()
+		);
 
 		// Draw a line marking the current hour, if it's present in the (possibly filtered) data
 		if (currentHourData) {
 			var xCurrentHour = x(currentHourData.datetime);
 			var yCurrentHour = y(currentHourData.price);
-			d3Svg.append("line")
+			d3Svg
+				.append("line")
 				.attr("x1", xCurrentHour - this.config.currentHourLineLenght) // x-coordinate of the start point (slightly left of the data point)
 				.attr("y1", yCurrentHour) // y-coordinate of the start point (same as data point)
 				.attr("x2", xCurrentHour + this.config.width + this.config.currentHourLineLenght) // x-coordinate of the end point (slightly right of the data point)
@@ -292,16 +311,13 @@ Module.register("MMM-NOKElectricityForecast", {
 				.attr("stroke-width", this.config.currentHourLineThickness); // Width of the line
 		}
 
-	  
 		// Add x-axis
-		d3Svg.append("g")
-        .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x)
-            .ticks(data.length)
-            .tickFormat(d3.timeFormat("%H"))); // Format ticks to show only hours
+		d3Svg
+			.append("g")
+			.attr("transform", "translate(0," + height + ")")
+			.call(d3.axisBottom(x).ticks(data.length).tickFormat(d3.timeFormat("%H"))); // Format ticks to show only hours
 
 		// Add y-axis
-		d3Svg.append("g")
-		  .call(d3.axisLeft(y));
-	  },
-  });
+		d3Svg.append("g").call(d3.axisLeft(y));
+	}
+});

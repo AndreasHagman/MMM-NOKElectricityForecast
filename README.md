@@ -27,51 +27,51 @@ Add the departure board to your configuration file, for instance:
     },
 },
 ```
+
 <img src="./images/linechart.png">
 
 ```js
 //Bar Chart Example:
 {
     module: "MMM-NOKElectricityForecast",
-    position: "bottom_bar", 
+    position: "bottom_bar",
     header: "Electricity Prices",
     config: {
         updateInterval: 300000, // 5 min - prices only change hourly, and node_helper caches the day's data anyway
         priceArea: "NO1",
-        historicalData: 3, 
-        height: 200, 
-        width: 15, 
+        historicalData: 3,
+        height: 200,
+        width: 15,
         chartType: "bar",
         primaryColor: "white",
         secondaryColor: "yellow",
         dynamicYAxis: false,
         barOffset: 10,
-        barwidth: 10, 
+        barwidth: 10,
     },
 },
 ```
+
 <img src="./images/barchart.png">
 
 ## Configuration
 
 Configuration options are as follows:
 
-
-| Option | Description | Default value |
-|-------------|--------------------------------------------------|---------------|
-| updateInterval | Integer (ms). How often the chart re-renders (e.g. to move the current-hour marker). The underlying price data is cached and only actually fetched once it's needed, so this can safely be fairly frequent | 300000 |
-| priceArea | String. Norwegian electricity price area: "NO1", "NO2", "NO3", "NO4" or "NO5" | "NO1" |
-| chartType | String. Can choose between bar and Line | "line" |
-| historicalData | Integer. Amount of previous hours to show | 2 |
-| height | Integer. Height of the module. | 150 |
-| width | Integer.  Witdh of the module. Total width is calculated based on current amount of hours showing, so this is not the final width | 15 |
-| primaryColor | String. D3.js color. Color of the line or the bars | "white" |
-| secondaryColor | String. D3.js color. Color of the current hour marker | "yellow" |
-| dynamicYAxis | Boolean. If you want the values on the Y-axis to be calculated dynamically based on the contents of the chart, if set to false minimum value will be 0, and maximum value will be calculated based on content | "true" |
-| yAxisExtention | Decimal. Values between 0.0 and 0.9. Will extend y-axis values by chosen amount | 0.0
-| barOffset | Integer. Used to center the bars in between the values. Depends on what you choose as barwidth | 10 |
-| barwidth | Integer. The width of each bar in the barchart | 10 |
-| lineThickness | Integer. Thickness of the line in the linechart | 3 |
-| currentHourLineThickness | Thickness of the line marking the current hour | 3 |
-| currentHourLineLenght | Length of the line marking the current hour | 0 |
-
+| Option                   | Description                                                                                                                                                                                                   | Default value |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
+| updateInterval           | Integer (ms). How often the chart re-renders (e.g. to move the current-hour marker). The underlying price data is cached and only actually fetched once it's needed, so this can safely be fairly frequent    | 300000        |
+| priceArea                | String. Norwegian electricity price area: "NO1", "NO2", "NO3", "NO4" or "NO5"                                                                                                                                 | "NO1"         |
+| chartType                | String. Can choose between bar and Line                                                                                                                                                                       | "line"        |
+| historicalData           | Integer. Amount of previous hours to show                                                                                                                                                                     | 2             |
+| height                   | Integer. Height of the module.                                                                                                                                                                                | 150           |
+| width                    | Integer. Witdh of the module. Total width is calculated based on current amount of hours showing, so this is not the final width                                                                              | 15            |
+| primaryColor             | String. D3.js color. Color of the line or the bars                                                                                                                                                            | "white"       |
+| secondaryColor           | String. D3.js color. Color of the current hour marker                                                                                                                                                         | "yellow"      |
+| dynamicYAxis             | Boolean. If you want the values on the Y-axis to be calculated dynamically based on the contents of the chart, if set to false minimum value will be 0, and maximum value will be calculated based on content | "true"        |
+| yAxisExtention           | Decimal. Values between 0.0 and 0.9. Will extend y-axis values by chosen amount                                                                                                                               | 0.0           |
+| barOffset                | Integer. Used to center the bars in between the values. Depends on what you choose as barwidth                                                                                                                | 10            |
+| barwidth                 | Integer. The width of each bar in the barchart                                                                                                                                                                | 10            |
+| lineThickness            | Integer. Thickness of the line in the linechart                                                                                                                                                               | 3             |
+| currentHourLineThickness | Thickness of the line marking the current hour                                                                                                                                                                | 3             |
+| currentHourLineLenght    | Length of the line marking the current hour                                                                                                                                                                   | 0             |

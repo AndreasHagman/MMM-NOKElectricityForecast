@@ -1,14 +1,14 @@
 .custom-pre {
-  /* Add styling for the list items (pre elements) */
-  font-size: 8px;
-  color: #333;
+	/* Add styling for the list items (pre elements) */
+	font-size: 8px;
+	color: #333;
 }
 
 .chart-svg {
-  /* Add styling for the D3.js chart SVG element */
-  max-width: 100%;
+	/* Add styling for the D3.js chart SVG element */
+	max-width: 100%;
 }
 
 .current-price {
-  margin-bottom: 5px;
+	margin-bottom: 5px;
 }
