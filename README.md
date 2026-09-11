@@ -12,6 +12,7 @@ Add the departure board to your configuration file, for instance:
     header: "Strømpriser",
     config: {
         updateInterval: 40000,
+        priceArea: "NO1",
         chartType: "line",
         historicalData: 3,
         height: 150,
@@ -31,11 +32,12 @@ Add the departure board to your configuration file, for instance:
 ```js
 //Bar Chart Example:
 {
-    module: "NOKElectricityForecast",
+    module: "MMM-NOKElectricityForecast",
     position: "bottom_bar", 
     header: "Electricity Prices",
     config: {
         updateInterval: 20000, 
+        priceArea: "NO1",
         historicalData: 3, 
         height: 200, 
         width: 15, 
@@ -57,6 +59,7 @@ Configuration options are as follows:
 
 | Option | Description | Default value |
 |-------------|--------------------------------------------------|---------------|
+| priceArea | String. Norwegian electricity price area: "NO1", "NO2", "NO3", "NO4" or "NO5" | "NO1" |
 | chartType | String. Can choose between bar and Line | "line" |
 | historicalData | Integer. Amount of previous hours to show | 2 |
 | height | Integer. Height of the module. | 150 |

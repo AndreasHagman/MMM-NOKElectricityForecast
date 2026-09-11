@@ -6,7 +6,7 @@
 Module.register("MMM-NOKElectricityForecast", {
 	defaults: {
 	  updateInterval: 60000,
-	  url: "https://www.hvakosterstrommen.no/api/v1/prices/" + this.getFormattedDate() + "_NO1.json",
+	  priceArea: "NO1", // Norwegian electricity price area: NO1-NO5. See https://www.hvakosterstrommen.no for a map.
 	  historicalData: 2,
 	  chartType: "line",
 	  height: 150,
@@ -27,9 +27,9 @@ Module.register("MMM-NOKElectricityForecast", {
 	  this.getData();
 	  this.scheduleUpdate();
 	},
-	getData: function (url = this.config.url) {
-		Log.info("Getting data from: " + url);
-		this.sendSocketNotification("GET_JSON_DATA", { url: url });
+	getData: function () {
+		Log.info("Getting data for price area: " + this.config.priceArea);
+		this.sendSocketNotification("GET_JSON_DATA", { priceArea: this.config.priceArea });
 	  },
 
 	// Define required scripts.
@@ -45,20 +45,9 @@ Module.register("MMM-NOKElectricityForecast", {
 	scheduleUpdate: function () {
 		var self = this;
 		setInterval(function () {
-		  var currentHour = new Date().getHours();
-		  if (currentHour < 14) {
-			self.getData(self.config.url); // Fetch data for the current day
-		  } else {
-			// Fetch data for the current day
-			self.getData(self.config.url);
-	  
-			// Fetch data for the next day
-			var tomorrowDate = new Date();
-			tomorrowDate.setDate(tomorrowDate.getDate() + 1);
-			var formattedNextDate = getFormattedDate(1);
-			var nextDayUrl = "https://www.hvakosterstrommen.no/api/v1/prices/" + formattedNextDate + "_NO1.json";
-			self.getData(nextDayUrl);
-		  }
+		  // node_helper decides internally whether tomorrow's data is needed yet;
+		  // we just ask for the configured price area every interval.
+		  self.getData();
 		}, this.config.updateInterval);
 	  },
   
@@ -70,11 +59,7 @@ Module.register("MMM-NOKElectricityForecast", {
 		this.processData(payload);
 	  }
 	},
-	isNextDayData: function (data) {
-		// Compare the dates (ignoring time) to determine if it's for the next day
-	  return new Date(data[1].time_start).getDate() === new Date().getDate() + 1;
-	  },
-  
+
 	processData: function (data) {
 	  //Log.info("Processing data:", data);
 	  this.jsonData = data;
@@ -275,14 +260,3 @@ Module.register("MMM-NOKElectricityForecast", {
 		  .call(d3.axisLeft(y));
 	  },
   });
-   // Add this function to your MMM-JSONDisplay.js file
- function getFormattedDate(daysToAdd = 0) {
-	const today = new Date();
-	today.setDate(today.getDate() + daysToAdd);
-  
-	const year = today.getFullYear();
-	const month = String(today.getMonth() + 1).padStart(2, '0');
-	const day = String(today.getDate()).padStart(2, '0');
-  
-	return `${year}/${month}-${day}`;
-  }

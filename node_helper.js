@@ -1,20 +1,28 @@
 const NodeHelper = require("node_helper");
 const axios = require("axios");
 
+const BASE_URL = "https://www.hvakosterstrommen.no/api/v1/prices/";
+
 module.exports = NodeHelper.create({
   start: function () {
     console.log("MMM-NOKElectricityForecast helper started...");
     this.currentDayData = [];
     this.nextDayData = [];
+    this.priceArea = "NO1";
   },
 
   socketNotificationReceived: function (notification, payload) {
     console.log("Helper received notification:", notification);
     if (notification === "GET_JSON_DATA") {
-      this.getData("https://www.hvakosterstrommen.no/api/v1/prices/" + getFormattedDate() + "_NO1.json"); // Fetch data for the current day
+      this.priceArea = payload.priceArea || this.priceArea;
+      this.getData(this.buildUrl(0)); // Fetch data for the current day, in the configured price area
     }
   },
-  
+
+  buildUrl: function (daysToAdd) {
+    return BASE_URL + getFormattedDate(daysToAdd) + "_" + this.priceArea + ".json";
+  },
+
   getData: function (url, isNextDay = false) {
     console.log("Fetching data from:", url);
     axios
@@ -29,7 +37,7 @@ module.exports = NodeHelper.create({
         }
         if (this.isCurrentDay(response.data) && !isNextDay) {
           this.currentDayData = response.data;
-          this.getData("https://www.hvakosterstrommen.no/api/v1/prices/" + getFormattedDate(1) + "_NO1.json", true);
+          this.getData(this.buildUrl(1), true);
           return;
         }
         if (this.isNextDayData(response.data) && isNextDay) {
