@@ -11,7 +11,7 @@ Add the departure board to your configuration file, for instance:
     position: "bottom_bar",
     header: "Strømpriser",
     config: {
-        updateInterval: 40000,
+        updateInterval: 300000, // 5 min - prices only change hourly, and node_helper caches the day's data anyway
         priceArea: "NO1",
         chartType: "line",
         historicalData: 3,
@@ -36,7 +36,7 @@ Add the departure board to your configuration file, for instance:
     position: "bottom_bar", 
     header: "Electricity Prices",
     config: {
-        updateInterval: 20000, 
+        updateInterval: 300000, // 5 min - prices only change hourly, and node_helper caches the day's data anyway
         priceArea: "NO1",
         historicalData: 3, 
         height: 200, 
@@ -59,6 +59,7 @@ Configuration options are as follows:
 
 | Option | Description | Default value |
 |-------------|--------------------------------------------------|---------------|
+| updateInterval | Integer (ms). How often the chart re-renders (e.g. to move the current-hour marker). The underlying price data is cached and only actually fetched once it's needed, so this can safely be fairly frequent | 300000 |
 | priceArea | String. Norwegian electricity price area: "NO1", "NO2", "NO3", "NO4" or "NO5" | "NO1" |
 | chartType | String. Can choose between bar and Line | "line" |
 | historicalData | Integer. Amount of previous hours to show | 2 |

@@ -15,7 +15,7 @@ module.exports = NodeHelper.create({
     console.log("Helper received notification:", notification);
     if (notification === "GET_JSON_DATA") {
       this.priceArea = payload.priceArea || this.priceArea;
-      this.getData(this.buildUrl(0)); // Fetch data for the current day, in the configured price area
+      this.refreshData();
     }
   },
 
@@ -23,27 +23,46 @@ module.exports = NodeHelper.create({
     return BASE_URL + getFormattedDate(daysToAdd) + "_" + this.priceArea + ".json";
   },
 
+  // Spot prices for a given day are published once and don't change afterwards, so there's no
+  // need to hit the API again every time the frontend asks for an update - only fetch what we
+  // don't already have cached. This is what keeps polling cheap regardless of updateInterval.
+  refreshData: function () {
+    var haveCurrentDay = this.currentDayData.length > 0 && this.isCurrentDay(this.currentDayData);
+    if (!haveCurrentDay) {
+      this.getData(this.buildUrl(0));
+      return;
+    }
+
+    var currentHour = new Date().getHours();
+    var haveNextDay = this.nextDayData.length > 0 && this.isNextDayData(this.nextDayData);
+    if (currentHour >= 14 && !haveNextDay) {
+      this.getData(this.buildUrl(1), true);
+      return;
+    }
+
+    // Nothing new needs fetching - resend what we have so the frontend can still refresh
+    // (e.g. move the "current hour" marker) without triggering another HTTP request.
+    this.sendSocketNotification("JSON_DATA_RESULT", this.currentDayData.concat(this.nextDayData));
+  },
+
   getData: function (url, isNextDay = false) {
     console.log("Fetching data from:", url);
     axios
       .get(url)
       .then((response) => {
-        var currentHour = new Date().getHours();
-        //console.log("Data fetched successfully:", response.data);
-        if (currentHour < 14 && !isNextDay) {
+        if (!isNextDay) {
           this.currentDayData = response.data;
+          this.nextDayData = []; // the day rolled over, forget any stale "tomorrow" cache
           this.sendSocketNotification("JSON_DATA_RESULT", this.currentDayData);
+          // Tomorrow's prices are usually published in the early afternoon; try for them too.
+          if (new Date().getHours() >= 14) {
+            this.refreshData();
+          }
           return;
         }
-        if (this.isCurrentDay(response.data) && !isNextDay) {
-          this.currentDayData = response.data;
-          this.getData(this.buildUrl(1), true);
-          return;
-        }
-        if (this.isNextDayData(response.data) && isNextDay) {
+        if (this.isNextDayData(response.data)) {
           this.nextDayData = response.data;
         }
-        //console.log("Data fetched successfully:", response.data);
         this.sendSocketNotification("JSON_DATA_RESULT", this.currentDayData.concat(this.nextDayData));
       })
       .catch((error) => {
