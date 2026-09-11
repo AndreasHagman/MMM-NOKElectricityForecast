@@ -3,6 +3,12 @@
  *
  * By Andreas Hagman
  */
+
+// Households in Nordland, Troms and Finnmark (price area NO4) are exempt from VAT on
+// electricity, see https://www.skatteetaten.no/rettskilder/type/handboker/merverdiavgiftshandboken/2023/M-6/M-6-6/
+const VAT_EXEMPT_PRICE_AREAS = ["NO4"];
+const VAT_MULTIPLIER = 1.25; // 25% MVA
+
 Module.register("MMM-NOKElectricityForecast", {
 	defaults: {
 	  updateInterval: 60000,
@@ -31,6 +37,11 @@ Module.register("MMM-NOKElectricityForecast", {
 		Log.info("Getting data for price area: " + this.config.priceArea);
 		this.sendSocketNotification("GET_JSON_DATA", { priceArea: this.config.priceArea });
 	  },
+
+	// Prices from the API are excl. VAT. Households in NO4 are VAT-exempt, everyone else pays 25% MVA.
+	getVatMultiplier: function () {
+		return VAT_EXEMPT_PRICE_AREAS.includes(this.config.priceArea) ? 1 : VAT_MULTIPLIER;
+	},
 
 	// Define required scripts.
 	getStyles: function () {
@@ -91,9 +102,10 @@ Module.register("MMM-NOKElectricityForecast", {
 	  },
 	  createBarChartD3: function (svg) {
 		// Sample data
+		var vatMultiplier = this.getVatMultiplier();
 		var data = this.jsonData.map((entry) => ({
 		  datetime: new Date(entry.time_start), // Store both date and time in datetime field
-		  price: entry.NOK_per_kWh*=1.25
+		  price: entry.NOK_per_kWh * vatMultiplier
 		}));
 
 		// Filter data for entries. 2 hours  historical is default
@@ -167,9 +179,10 @@ Module.register("MMM-NOKElectricityForecast", {
 	  },
 	  createLineChartD3: function(svg) {
 		// Sample data (assuming data has 'time_start' and 'NOK_per_kWh' fields)
+		var vatMultiplier = this.getVatMultiplier();
 		var data = this.jsonData.map((entry) => ({
 		  datetime: new Date(entry.time_start), // Store time_start as datetime field
-		  price: entry.NOK_per_kWh*=1.25 // Use NOK_per_kWh as the y-value
+		  price: entry.NOK_per_kWh * vatMultiplier // Use NOK_per_kWh incl. VAT (if applicable) as the y-value
 		}));
 
 		// Filter data for entries. 2 hours  historical is default
