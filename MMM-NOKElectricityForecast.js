@@ -113,10 +113,14 @@ Module.register("MMM-NOKElectricityForecast", {
 		filterHours.setHours(filterHours.getHours() - this.config.historicalData-1);
 		data = data.filter((entry) => entry.datetime > filterHours);
 
+		if (data.length === 0) {
+			Log.warn(this.name + ": no data left to chart after filtering, skipping render.");
+			return;
+		}
 
 		// Assuming 'data' is the array you are working with for the bar chart
 		var lastEntry = data[data.length - 1]; // Get the last entry from the data array
-	
+
 		var tomorrow = new Date(lastEntry.datetime); // Get the time from the last entry
 		tomorrow.setDate(tomorrow.getDate() + 1); // Get the date for the next day
 		tomorrow.setHours(0, 0, 0, 0); // Set the time to 00:00 for the next day
@@ -190,6 +194,11 @@ Module.register("MMM-NOKElectricityForecast", {
 		filterHours.setHours(filterHours.getHours() - this.config.historicalData-1);
 		data = data.filter((entry) => entry.datetime > filterHours);
 
+		if (data.length === 0) {
+			Log.warn(this.name + ": no data left to chart after filtering, skipping render.");
+			return;
+		}
+
 		// Assuming 'data' is the array you are working with for the line chart
 		var lastEntry = data[data.length - 1]; // Get the last entry from the data array
 
@@ -246,19 +255,20 @@ Module.register("MMM-NOKElectricityForecast", {
 
 		// Find data point for the current hour
 		var currentDate = new Date();
-		var currentHourData = data.find(d => d.datetime.getHours() === currentDate.getHours());
+		var currentHourData = data.find(d => d.datetime.getHours() === currentDate.getHours() && d.datetime.getDate() === currentDate.getDate());
 
-		// Draw a line for the current hour
-		// Draw a line for the current hour
-		var xCurrentHour = x(currentHourData.datetime);
-		var yCurrentHour = y(currentHourData.price);
-		d3Svg.append("line")
-			.attr("x1", xCurrentHour - this.config.currentHourLineLenght) // x-coordinate of the start point (slightly left of the data point)
-			.attr("y1", yCurrentHour) // y-coordinate of the start point (same as data point)
-			.attr("x2", xCurrentHour + this.config.width + this.config.currentHourLineLenght) // x-coordinate of the end point (slightly right of the data point)
-			.attr("y2", yCurrentHour) // y-coordinate of the end point (same as data point)
-			.attr("stroke", this.config.secondaryColor) // Color of the line
-			.attr("stroke-width", this.config.currentHourLineThickness); // Width of the line
+		// Draw a line marking the current hour, if it's present in the (possibly filtered) data
+		if (currentHourData) {
+			var xCurrentHour = x(currentHourData.datetime);
+			var yCurrentHour = y(currentHourData.price);
+			d3Svg.append("line")
+				.attr("x1", xCurrentHour - this.config.currentHourLineLenght) // x-coordinate of the start point (slightly left of the data point)
+				.attr("y1", yCurrentHour) // y-coordinate of the start point (same as data point)
+				.attr("x2", xCurrentHour + this.config.width + this.config.currentHourLineLenght) // x-coordinate of the end point (slightly right of the data point)
+				.attr("y2", yCurrentHour) // y-coordinate of the end point (same as data point)
+				.attr("stroke", this.config.secondaryColor) // Color of the line
+				.attr("stroke-width", this.config.currentHourLineThickness); // Width of the line
+		}
 
 	  
 		// Add x-axis
